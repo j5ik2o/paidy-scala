@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema#",
+  "type": "object",
+  "description": "決済のRefund",
+  "properties": {
+    "capture_id": { "type": "string", "required": true, "description": "Refundの対象となる商品のCapture ID。Capture IDは必ず「cap_」で始まります" },
+    "amount": { "type": "number", "required": false, "description": "Refundを行う金額" },
+    "reason": { "type": "string", "required": false, "description": "Refundを行う金額" },
+    "metadata":  { 
+      "type": "object",  
+      "description": "マーチャント定義のメタデータ。キーと値のセットを20件まで追加できます", 
+      "properties": { 
+        "{name}": { "type": "string", "description": "キーと値のセット", "repeat": true }
+      }
+    }
+  }
+}

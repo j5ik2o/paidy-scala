@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema#",
+  "type": "object",
+  "description": "Update payment fields",
+  "properties": {
+    "order_ref": { "type": "string", "required": false, "description": "コンシューマーがmyPaidyで閲覧できる、決済についての説明文" },
+    "description": { "type": "string", "required": false, "description": "マーチャントが割り当てる注文IDまたはカートID" },
+    "metadata":  { 
+      "type": "object",  
+      "description": "マーチャント定義のメタデータ。キーと値のセットを20件まで追加できます", 
+      "properties": { 
+        "{name}": { "type": "string", "description": "キーと値のセット", "repeat": true }
+      }
+    }
+  }
+}

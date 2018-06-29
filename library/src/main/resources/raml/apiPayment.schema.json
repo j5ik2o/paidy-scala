@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema#",
+  "type": "object",
+  "description": "Payment object",
+  "properties": {
+    "id": { "type": "string", "required": true, "description": "Unique Paidy-assigned payment ID; payment IDs begin with pay_" },
+    "created_at": { "type": "string", "required": true, "description": "Time the payment was created in Paidy, in ISO 8601 datetime format" },
+    "expires_at": { "type": "string", "required": true, "description": "Date and time the payment automatically expires, in UTC, and displayed in ISO 8601 datetime format" },
+    "amount": { "type": "number", "required": true, "description": "Total payment amount" },
+    "currency": { "type": "string", "required": true, "description": "ISO 4217 currency code; set to JPY" },
+    "description": { "type": "string", "required": false, "description": "Description the customer will see at myPaidy" },
+    "store_name": { "type": "string", "required": true, "description": "Merchant store name" },    
+    "test": { "type": "boolean", "required": true, "description": "Indicates whether this is a test (created using a test API key)" },
+    "status": { "type": "string", "required": true, "description": "Current status of this payment object" },
+    "buyer": { 
+      "type": "object", 
+      "description": "Customer/buyer details",
+      "properties": {
+        "name1": { "type": "string", "required": true, "description": "Customer's name in kanji. Family name and first name must be separated by a space, e.g., 山田　太郎" },
+        "name2": { "type": "string", "required": false, "description": "Customer's name in katakana. Family name and first name must be separated by a space, e.g., ヤマダ　タロウ" },
+        "email": { "type": "string", "required": true, "description": "Customer's email address" },
+        "phone": { "type": "string", "required": true, "description": "Customer's phone number; this must be a mobile phone where the customer can receive text messages " }
+      }
+    },
+    "order": { 
+      "type": "object", 
+      "description": "Order/cart details",
+      "properties": {
+        "tax": { "type": "number", "required": false, "description": "Total tax due on the order" },
+        "shipping": { "type": "number", "required": false, "description": "Total shipping cost for the order" },
+        "order_ref": { "type": "string", "required": false, "description": "Merchant's order or cart ID" },
+        "order_items": { 
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "Order items",
+            "properties": {
+              "id": { "type": "string", "required": true, "description": "Product ID" },
+              "title": { "type": "string", "required": true, "description": "Name of product" },
+              "description": { "type": "string", "required": false, "description": "Description of product" },
+              "unit_price": { "type": "number", "required": true, "description": "Price per unit of product" },
+              "quantity": { "type": "number", "required": true, "description": "Quantity of product being ordered" }
+            }
+          }
+        },
+        "updated_at": { "type": "string", "required": false, "description": "Time the order was last updated, in ISO 8601 datetime format " }
+      }
+    },
+    "shipping_address": { 
+      "type": "object", 
+      "description": "Shipping address details",
+      "properties": {
+        "line1": { "type": "string", "required": false, "description": "House name, apartment building, apartment number" },
+        "line2": { "type": "string", "required": false, "description": "District (chōme), land number, land number extension" },
+        "city": { "type": "string", "required": false, "description": "Name of city, municipality, or village " },
+        "state": { "type": "string", "required": false, "description": "Prefecture " },
+        "zip": { "type": "string", "required": true, "description": "Postal code; format is NNN-NNNN " }
+      }
+    }, 
+    "captures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Captured payments",
+        "properties": {
+          "id": { "type": "string", "required": true, "description": "Capture ID; capture IDs begin with cap_" },
+          "created_at": { "type": "string", "required": true, "description": "Time the capture was created in Paidy, in ISO 8601 datetime format" },
+          "amount": { "type": "number", "required": true, "description": "Amount to be captured" },
+          "tax": { "type": "number", "required": false, "description": "Tax value captured" },
+          "shipping": { "type": "number", "required": false, "description": "Shipping cost captured" },
+          "order_items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "description": "Order items",
+              "properties": {
+                "id": { "type": "string", "required": true, "description": "Product ID" },
+                "title": { "type": "string", "required": true, "description": "Name of product" },
+                "description": { "type": "string", "required": false, "description": "Description of product" },
+                "unit_price": { "type": "number", "required": true, "description": "Price per unit of product" },
+                "quantity": { "type": "number", "required": true, "description": "Quantity of product being ordered" }
+              }
+            }
+          },
+          "metadata":  { 
+            "type": "object",  
+            "description": "Use this field to store additional structured information about the capture object. Key-value map, limited to 20 keys", 
+            "properties": { 
+              "{name}": { "type": "string", "description": "Key-value map", "repeat": true }
+            }
+          }
+        }
+      }
+    },
+    "refunds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Refunded payments",
+        "properties": {
+          "id": { "type": "string", "required": true, "description": "Refund ID; refund IDs begin with ref_" },
+          "created_at": { "type": "string", "required": true, "description": "Time the refund was created in Paidy, in ISO 8601 datetime format" },
+          "capture_id": { "type": "string", "required": true, "description": "Capture ID; capture IDs begin with cap_" },
+          "amount": { "type": "number", "required": true, "description": "Amount to be refunded" },
+          "reason": { "type": "string", "required": true, "description": "Reason for the refund" },
+          "metadata":  { 
+            "type": "object",  
+            "description": "Use this field to store additional structured information about the capture object. Key-value map, limited to 20 keys", 
+            "properties": { 
+              "{name}": { "type": "string", "description": "Key-value map", "repeat": true }
+            }
+          }
+        }
+      }
+    },    
+    "metadata":  { 
+      "type": "object",  
+      "description": "Use this field to store additional structured information about the capture object. Key-value map, limited to 20 keys", 
+      "properties": { 
+        "{name}": { "type": "string", "description": "Key-value map", "repeat": true }
+      }
+    }
+  }
+}

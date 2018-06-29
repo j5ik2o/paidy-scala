@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema#",
+  "type": "object",
+  "description": "Create refund",
+  "properties": {
+    "capture_id": { "type": "string", "required": true, "description": "Capture ID; capture IDs begin with cap_" },
+    "amount": { "type": "number", "required": false, "description": "The amount to refund; if not set, the total amount of the payment is refunded" },
+    "reason": { "type": "string", "required": false, "description": "The reason for the refund" },
+    "metadata":  { 
+      "type": "object",  
+      "description": "Use this field to store additional structured information about the capture object. Key-value map, limited to 20 keys", 
+      "properties": { 
+        "{name}": { "type": "string", "description": "Key-value map", "repeat": true }
+      }
+    }
+  }
+}

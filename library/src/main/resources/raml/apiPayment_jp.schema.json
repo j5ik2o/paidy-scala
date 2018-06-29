@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema#",
+  "type": "object",
+  "description": "Paymentオブジェクト",
+  "properties": {
+    "id": { "type": "string", "required": true, "description": "Paidyが割り当てる一意のPayment ID。このPayment IDは必ず「pay_」で始まります" },
+    "created_at": { "type": "string", "required": true, "description": "決済オブジェクトが作成された日時（ISO 8601に準じるdatetime形式）" },
+    "expires_at": { "type": "string", "required": true, "description": "決済が自動的に失効する日時。ISO 8601のフォーマットに準じるUTC）" },
+    "amount": { "type": "number", "required": true, "description": "決済総額" },
+    "currency": { "type": "string", "required": true, "description": "決済額の基準となる通貨を示す、ISO4217通貨コードに準じた値（JPYに設定）" },
+    "description": { "type": "string", "required": false, "description": "コンシューマーがmyPaidyで閲覧できる、決済についての説明文" },
+    "store_name": { "type": "string", "required": true, "description": "マーチャントの店舗名" },    
+    "test": { "type": "boolean", "required": true, "description": "決済がテスト用（テスト用のAPIキーを利用して作成された）かどうかを示します" },
+    "status": { "type": "string", "required": true, "description": "決済オブジェクトの現在の状態" },
+    "buyer": { 
+      "type": "object", 
+      "description": "Buyerオブジェクト",
+      "properties": {
+        "name1": { "type": "string", "required": true, "description": "コンシューマーの氏名（漢字表記）。 姓と名をスペースで区切る必要があります(例：山田 太郎）" },
+        "name2": { "type": "string", "required": false, "description": "コンシューマーの氏名（カタカナ表記）。 姓と名をスペースで区切る必要があります（例：ヤマダ タロウ）" },
+        "email": { "type": "string", "required": true, "description": "コンシューマーのメールアドレス" },
+        "phone": { "type": "string", "required": true, "description": "コンシューマーの電話番号（例：09011112222）。コンシューマーがテキストメッセージを受信できる携帯電話の番号です。" }
+      }
+    },
+    "order": { 
+      "type": "object", 
+      "description": "注文/カートの詳細情報",
+      "properties": {
+        "tax": { "type": "number", "required": false, "description": "注文にかかる消費税" },
+        "shipping": { "type": "number", "required": false, "description": "注文にかかる配送料" },
+        "order_ref": { "type": "string", "required": false, "description": "マーチャントが割り当てる注文IDまたはカートID" },
+        "order_items": { 
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "注文商品",
+            "properties": {
+              "id": { "type": "string", "required": true, "description": "商品ID" },
+              "title": { "type": "string", "required": true, "description": "商品名" },
+              "description": { "type": "string", "required": false, "description": "注文商品の説明" },
+              "unit_price": { "type": "number", "required": true, "description": "注文商品の単価" },
+              "quantity": { "type": "number", "required": true, "description": "注文商品の数" }
+            }
+          }
+        },
+        "updated_at": { "type": "string", "required": false, "description": "注文/カートの詳細情報が最後に更新された日時（ISO 8601に準じるdatetime形式） " }
+      }
+    },
+    "shipping_address": { 
+      "type": "object", 
+      "description": "配送先オブジェクト",
+      "properties": {
+        "line1": { "type": "string", "required": false, "description": "建物名と部屋番号（国内の住所の場合）" },
+        "line2": { "type": "string", "required": false, "description": "番地（国内の住所の場合）" },
+        "city": { "type": "string", "required": false, "description": "市区町村" },
+        "state": { "type": "string", "required": false, "description": "都道府県" },
+        "zip": { "type": "string", "required": true, "description": "郵便番号（NNN-NNNN形式）" }
+      }
+    }, 
+    "captures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "支払いの回収（Capture)",
+        "properties": {
+          "id": { "type": "string", "required": true, "description": "Paidyが割り当てる一意のCapture ID。このCapture IDは必ず「cap_」で始まります" },
+          "created_at": { "type": "string", "required": true, "description": "Captureオブジェクトが生成された日時（ISO 8601に準じるdatetime形式）" },
+          "amount": { "type": "number", "required": true, "description": "Captureを行う金額" },
+          "tax": { "type": "number", "required": false, "description": "注文にかかる消費税" },
+          "shipping": { "type": "number", "required": false, "description": "注文にかかる配送料" },
+          "order_items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "description": "注文商品",
+              "properties": {
+                "id": { "type": "string", "required": true, "description": "商品ID" },
+                "title": { "type": "string", "required": true, "description": "商品名" },
+                "description": { "type": "string", "required": false, "description": "注文商品の説明" },
+                "unit_price": { "type": "number", "required": true, "description": "注文商品の単価" },
+                "quantity": { "type": "number", "required": true, "description": "注文商品の数" }
+              }
+            }
+          },
+          "metadata":  { 
+            "type": "object",  
+            "description": "マーチャント定義のメタデータ。キーと値のセットを20件まで追加できます", 
+            "properties": { 
+              "{name}": { "type": "string", "description": "キーと値のセット", "repeat": true }
+            }
+          }
+        }
+      }
+    },
+    "refunds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "回収した金額の払い戻し（Refund）",
+        "properties": {
+          "id": { "type": "string", "required": true, "description": "Paidyが割り当てる一意のRefund ID。このRefund IDは必ず「ref_」で始まります" },
+          "created_at": { "type": "string", "required": true, "description": "Refundオブジェクトが生成された日時（ISO 8601に準じるdatetime形式）" },
+          "capture_id": { "type": "string", "required": true, "description": "Refundの対象となる商品のCapture ID（Capture IDは必ず「cap_」で始まります）" },
+          "amount": { "type": "number", "required": true, "description": "Refundを行う金額" },
+          "reason": { "type": "string", "required": true, "description": "Refundを行う理由" },
+          "metadata":  { 
+            "type": "object",  
+            "description": "マーチャント定義のメタデータ。キーと値のセットを20件まで追加できます", 
+            "properties": { 
+              "{name}": { "type": "string", "description": "キーと値のセット", "repeat": true }
+            }
+          }
+        }
+      }
+    },
+    "metadata":  { 
+      "type": "object",  
+      "description": "マーチャント定義のメタデータ。キーと値のセットを20件まで追加できます", 
+      "properties": { 
+        "{name}": { "type": "string", "description": "キーと値のセット", "repeat": true }
+      }
+    }
+  }
+}
+  

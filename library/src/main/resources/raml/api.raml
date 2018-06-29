@@ -1,0 +1,166 @@
+#%RAML 0.8
+
+title: Paidy API
+baseUri: https://api.paidy.com
+version: 2016-07-01
+protocols: [ HTTPS ] 
+mediaType: application/json
+
+schemas:
+  - apiPayment: !include apiPayment.schema.json
+  - apiCreateRefund: !include apiCreateRefund.schema.json
+  - apiUpdatePayment: !include apiUpdatePayment.schema.json
+  - apiCapturePayment: !include apiCapturePayment.schema.json
+
+/payments:
+  displayName: Payments
+  description: Once a payment has been successfully created via Paidy Checkout, you can use the Paidy API to manage the payment. This API allows you to capture, partially or fully refund, close, retrieve, or update a payment. The API is exposed over a series of REST endpoints, with request and response data formatted as JSON. The payment ID that was returned in the callback (after a successful payment creation) is embedded in the URI for every API request against that payment. All API requests must be made over HTTPS. Calls made over HTTP will fail.
+  /{id}/captures:
+    displayName: Capture a payment
+    description: When you are ready to charge the customer, you perform a capture request. The payment must have a status of AUTHORIZED. 
+    uriParameters: 
+      id: 
+        displayName: id
+        type: string
+        description: Paidy payment ID, starting with pay_.
+    post:
+      description: The body of the POST request can be empty or can contain the metadata field. Upon success, Paidy returns a 200 HTTP status code and the updated payment object, including the captures object. Upon failure, Paidy returns a 4xx or 5xx HTTP status code and an error object containing the details of the failure. The request will fail if the payment is already captured or expired, or the header is not correct.
+      headers:
+        Authorization:
+          displayName: HTTP Basic Authorization
+          description: Header necessary for HTTP Basic Authentication. Provide your secret key as the username value; you do not need to provide a password. This is required; the message will fail without it.
+          type: string
+          required: true
+        Paidy-Version:
+          displayName: Paidy-Version
+          description: Version number of the Paidy API. The current version is 2016-07-01. While this field is not required, we strongly recommended that you send it.
+          type: string
+          required: false
+          example: 2016-07-01
+      body: 
+        application/json:
+          schema: apiCapturePayment
+          example: !include capture-payment.sample
+      responses:
+        200:
+          description: Capture request was successful.
+          body:
+            application/json:
+              schema: apiPayment
+              example: !include payment-response.sample
+  /{id}/refunds:
+    displayName: Refund a payment
+    description: Refunds all or part of a Paidy payment. You can only refund a payment that has been captured. 
+    uriParameters: 
+      id: 
+        displayName: id
+        type: string
+        description: Paidy payment ID, starting with pay_.
+    post:
+      description:  Since a refund request is executed on the specified capture, the capture_id must be included in the request. The message can also optionally contain the amount, reason, and metadata fields. Paidy uses the amount field to determine whether the request is for a partial refund or full refund. If no amount is specified, Paidy refunds the full amount for that capture. Upon success, Paidy returns a 200 HTTP status code and the updated payment object, including the refunds object. Upon failure, Paidy returns a 4xx or 5xx HTTP status code and an error object containing the details of the failure. A request will fail if the payment is not yet captured, already expired, already fully refunded, or an invalid refund amount is specified. 
+      headers:
+        Authorization:
+          displayName: HTTP Basic Authorization
+          description: Headers necessary for HTTP Basic Authentication. Provide your secret key as the username value; you do not need to provide a password. This is required; the message will fail without it.  
+          type: string
+          required: true
+        Paidy-Version:
+          displayName: Paidy-Version
+          description: Version number of the Paidy API. The current version is 2016-07-01. While this field is not required, we strongly recommended that you send it.
+          type: string
+          required: false
+          example: 2016-07-01
+      body:
+        application/json:
+          schema: apiCreateRefund
+          example: !include create-new-refund.sample
+      responses:
+        200:
+          description: Refund request was successful.
+          body:
+            application/json:
+              schema: apiPayment
+              example: !include payment-response.sample
+  /{id}:
+    displayName: Update or view payment
+    description: This endpoint can be used for a GET or PUT request. A PUT request updates the order_ref, description, and/or metadata fields for a payment. You can only update these fields in a payment; if you send other fields in the request, Paidy will ignore them. You can update one or more fields in one PUT request. The payment status must be AUTHORIZED or CLOSED. A GET request is used to retrieve a payment. 
+    uriParameters: 
+      id: 
+        displayName: id
+        type: string
+        description: Paidy payment ID, starting with pay_.
+    get:
+      description: The body of the POST request is empty. Upon success, Paidy returns a 200 HTTP status code and the payment object. Upon failure, Paidy returns a 4xx or 5xx HTTP status code and an error object containing the details of the failure".
+      headers:
+        Authorization:
+          displayName: HTTP Basic Authorization
+          description: Headers necessary for HTTP Basic Authentication. Provide your secret key as the username value; you do not need to provide a password. This is required; the message will fail without it. 
+          type: string
+          required: true
+        Paidy-version:
+          displayName: Paidy-version
+          description: Version number of the Paidy API. The current version is 2016-07-01. While this field is not required, we strongly recommended that you send it.
+          type: string
+          required: false
+          example: 2016-07-01
+      responses:
+        200:
+          description: Close request was successful.
+          body:
+            application/json:
+              schema: apiPayment
+              example: !include payment-response.sample 
+    put:
+      description: The body of the PUT request contains the field(s) to be updated. You can update one or more fields. Upon success, Paidy returns a 200 HTTP status code and the payment object. Upon failure, Paidy returns a 4xx or 5xx HTTP status code and an error object containing the details of the failure. 
+      headers:
+        Authorization:
+          displayName: HTTP Basic Authorization
+          description: Headers necessary for HTTP Basic Authentication. Provide your secret key as the username value; you do not need to provide a password. This is required; the message will fail without it. 
+          type: string
+          required: true
+        Paidy-version:
+          displayName: Paidy-version
+          description: Version number of the Paidy API. The current version is 2016-07-01. While this field is not required, we strongly recommended that you send it.
+          type: string
+          required: false
+          example: 2016-07-01
+      body:
+        application/json:
+          schema: apiUpdatePayment
+          example: !include update-payment.sample
+      responses:
+        200:
+          description: Update request was successful.
+          body:
+            application/json:
+              schema: apiPayment
+              example: !include payment-response.sample
+  /{id}/close:
+    displayName: Close a payment
+    description: Closes an open payment that has been authorized, but has not been captured. 
+    uriParameters: 
+      id: 
+        displayName: id
+        type: string
+        description: Paidy payment ID, starting with pay_.
+    post:
+      description: The body of the POST request is empty. Upon success, Paidy returns a 200 HTTP status code and the payment object. Upon failure, Paidy returns a 4xx or 5xx HTTP status code and an error object containing the details of the failure. The request will fail if the payment does not have a status of AUTHORIZED.
+      headers:
+        Authorization:
+          displayName: HTTP Basic Authorization
+          description: Headers necessary for HTTP Basic Authentication. Provide your secret key as the username value; you do not need to provide a password. This is required; the message will fail without it. 
+          type: string
+          required: true
+        Paidy-Version:
+          displayName: Paidy-Version
+          description: Version number of the Paidy API. The current version is 2016-07-01. While this field is not required, we strongly recommended that you send it.
+          type: string
+          required: false
+          example: 2016-07-01
+      responses:
+        200:
+          description: Close request was successful.
+          body:
+            application/json:
+              schema: apiPayment
+              example: !include payment-response.sample 

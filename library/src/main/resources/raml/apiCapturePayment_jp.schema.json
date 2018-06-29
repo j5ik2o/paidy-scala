@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-03/schema#",
+  "type": "object",
+  "description": "決済のCapture",
+  "properties": {
+    "metadata":  { 
+      "type": "object",  
+      "description": "マーチャント定義のメタデータ。キーと値のセットを20件まで追加できます", 
+      "properties": { 
+        "{name}": { "type": "string", "description": "キーと値のセット", "repeat": true }
+      }
+    }
+  }
+}
